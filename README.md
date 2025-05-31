@@ -22,7 +22,6 @@ A **Route-to-Market (RTM) Sales Force Automation** app that enables sales reps t
 - 📍 **Visit Tracking** — Log customer visits with location and timestamp
 - 📊 **Activity Management** — Create and track daily sales tasks
 - 📈 **Statistics Dashboard** — View visual visit analytics
-- 👥 **Customer Management** — Maintain customer profiles and notes
 - 🔄 **Sync Capabilities** — Offline-first with background data synchronization
 - 📱 **Responsive Design** — Mobile-first, with smooth UX on all screens
 

@@ -36,8 +36,10 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
-          name: release-apk
+          name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 5
+          if-no-files-found: error
 
   deploy:
     needs: build
@@ -45,15 +47,13 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Download APK artifact
+      - name: Download APK
         uses: actions/download-artifact@v3
         with:
-          name: release-apk
+          name: app-release
+          path: apk
 
-      - name: Deploy to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-          groups: testers
-          file: release-apk/app-release.apk
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: apk
+
