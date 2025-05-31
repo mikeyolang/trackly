@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:trackly/core/constants/print_styles.dart';
 import 'package:trackly/core/errors/exceptions.dart';
 import 'package:trackly/core/network/api_client.dart';
 import 'package:trackly/domain/entities/activity.dart';
@@ -16,24 +17,46 @@ class VisitsRemoteDatasource {
   Future<List<Visit>> getVisits() async {
     try {
       final response = await _apiClient.dio.get('/visits');
+      beautifulLogger.debug("Raw API Response: ${response.data}");
 
-      var result =
-          (response.data as List).map((json) => Visit.fromJson(json)).toList();
+      if (response.data == null) {
+        throw ServerException("Response data is null");
+      }
 
-      return result;
-    } catch (e) {
-      throw ServerException(
-        "Failed to fetch visits: ",
-      );
+      if (response.data is! List) {
+        beautifulLogger.error(
+          "Response data is not a List: ${response.data.runtimeType}",
+        );
+        throw ServerException("Invalid response format");
+      }
+
+      final List<Visit> visits = [];
+      for (var item in response.data) {
+        try {
+          final visit = Visit.fromJson(item);
+          visits.add(visit);
+        } catch (e, stack) {
+          beautifulLogger.error("Error parsing visit: $e\nStack: $stack");
+        }
+      }
+
+      beautifulLogger.success("Successfully parsed ${visits.length} visits");
+      return visits;
+    } catch (e, stack) {
+      beautifulLogger.error("Failed to fetch visits: $e\nStack: $stack");
+      throw ServerException("Failed to fetch visits: ${e.toString()}");
     }
   }
 
   Future<Visit> createVisit(Visit visit) async {
+    beautifulLogger.debug("The Visis $visit");
     try {
       final response = await _apiClient.dio.post(
         '/visits',
         data: jsonEncode(visit.toJson()),
       );
+      beautifulLogger.debug("$visit");
+      beautifulLogger.success("Created visit with ID: ${response.data['id']}");
 
       return Visit.fromJson(response.data);
     } catch (e) {

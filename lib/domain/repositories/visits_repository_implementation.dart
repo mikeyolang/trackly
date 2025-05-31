@@ -1,5 +1,6 @@
 // ignore_for_file: await_only_futures
 
+import 'package:trackly/core/constants/print_styles.dart';
 import 'package:trackly/core/services/connectivity_service.dart';
 import 'package:trackly/data/datasources/visits_local_datasource.dart';
 import 'package:trackly/data/datasources/visits_remote_datasource.dart';
@@ -22,7 +23,11 @@ class VisitsRepositoryImplementation implements VisitsRepository {
   Future<List<Visit>> getVisits() async {
     try {
       if (_connectivityService.isConnected) {
+      
         final visits = await _remoteDataSource.getVisits();
+        beautifulLogger.success(
+          "Fetched ${visits.length} visits from remote API",
+        );
         await _localDataSource.cacheVisits(visits);
         return visits;
       } else {

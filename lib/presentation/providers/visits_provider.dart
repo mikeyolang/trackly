@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:trackly/data/models/app_models.dart';
 import 'package:trackly/presentation/providers/notification_provider.dart';
@@ -12,100 +13,68 @@ part 'visits_provider.g.dart';
 class VisitsNotifier extends _$VisitsNotifier {
   @override
   FutureOr<List<Visit>> build() async {
-    final repository = ref.read(visitsRepositoryProvider);
-    return repository.getVisits();
+    debugPrint('Building VisitsNotifier');
+    // Immediately start loading the visits
+    _loadInitialVisits();
+    // Return empty list initially to avoid null
+    return [];
   }
 
-  Future<void> addVisit(Visit visit) async {
-    state = const AsyncValue.loading();
-    try {
-      final repository = ref.read(visitsRepositoryProvider);
-      await repository.createVisit(visit);
-
-      // Refresh the list after adding
-      ref.invalidateSelf();
-
-      // Show success notification
-      ref
-          .read(notificationNotifierProvider.notifier)
-          .showSuccess('Visit added successfully');
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-
-      // Show error notification
-      final errorMessage = _getErrorMessage(error);
-      ref.read(notificationNotifierProvider.notifier).showError(errorMessage);
-      rethrow;
-    }
-  }
-
-  // Future<void> updateVisit(Visit visit) async {
-  //   state = const AsyncValue.loading();
-  //   try {
-  //     final repository = ref.read(visitsRepositoryProvider);
-  //     await repository.updateVisit(visit);
-
-  //     // Refresh the list after updating
-  //     ref.invalidateSelf();
-
-  //     ref
-  //         .read(notificationProvider.notifier)
-  //         .showSuccess('Visit updated successfully');
-  //   } catch (error, stackTrace) {
-  //     state = AsyncValue.error(error, stackTrace);
-
-  //     final errorMessage = _getErrorMessage(error);
-  //     ref.read(notificationProvider.notifier).showError(errorMessage);
-  //     rethrow;
-  //   }
-  // }
-
-  // Future<void> deleteVisit(int visitId) async {
-  //   // Optimistically remove from UI
-  //   final currentState = state;
-  //   if (currentState is AsyncData<List<Visit>>) {
-  //     final updatedVisits =
-  //         currentState.value.where((v) => v.id != visitId).toList();
-  //     state = AsyncData(updatedVisits);
-  //   }
-
-  //   try {
-  //     final repository = ref.read(visitsRepositoryProvider);
-  //     await repository.deleteVisit(visitId);
-
-  //     ref
-  //         .read(notificationProvider.notifier)
-  //         .showSuccess('Visit deleted successfully');
-  //   } catch (error, stackTrace) {
-  //     // Revert optimistic update on error
-  //     state = currentState;
-
-  //     final errorMessage = _getErrorMessage(error);
-  //     ref.read(notificationProvider.notifier).showError(errorMessage);
-  //     rethrow;
-  //   }
-  // }
-
-  Future<void> refreshVisits() async {
-    state = const AsyncValue.loading();
+  Future<void> _loadInitialVisits() async {
     try {
       final repository = ref.read(visitsRepositoryProvider);
       final visits = await repository.getVisits();
+      debugPrint('Fetched ${visits.length} visits');
       state = AsyncValue.data(visits);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
     }
   }
 
-  String _getErrorMessage(dynamic error) {
-    if (error is ServerException) {
-      return 'Server error: ${error.message}';
-    } else if (error is NetworkException) {
-      return 'Network error: Please check your connection';
-    } else if (error is CacheException) {
-      return 'Storage error: ${error.message}';
-    } else {
-      return 'An unexpected error occurred';
+  Future<void> searchVisits(String query) async {
+    if (query.isEmpty) {
+      refreshVisits();
+      return;
+    }
+
+    final currentVisits = await future;
+    final filteredVisits =
+        currentVisits
+            .where(
+              (visit) =>
+                  visit.location.toLowerCase().contains(query.toLowerCase()) ||
+                  visit.notes.toLowerCase().contains(query.toLowerCase()) ||
+                  visit.status.toLowerCase().contains(query.toLowerCase()),
+            )
+            .toList();
+
+    state = AsyncValue.data(filteredVisits);
+  }
+
+  Future<void> addVisit(Visit visit) async {
+    try {
+      final repository = ref.read(visitsRepositoryProvider);
+      final newVisit = await repository.createVisit(visit);
+      state = AsyncValue.data([...state.value ?? [], newVisit]);
+      ref
+          .read(notificationNotifierProvider.notifier)
+          .showSuccess('Visit added successfully');
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error, stackTrace);
+      ref
+          .read(notificationNotifierProvider.notifier)
+          .showError('Failed to add visit');
+    }
+  }
+
+  Future<void> refreshVisits() async {
+    try {
+      final repository = ref.read(visitsRepositoryProvider);
+      final visits = await repository.getVisits();
+      state = AsyncValue.data(visits);
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error, stackTrace);
+      ref.read(notificationNotifierProvider.notifier);
     }
   }
 }
@@ -115,6 +84,7 @@ class FilteredVisitsNotifier extends _$FilteredVisitsNotifier {
   @override
   FutureOr<List<Visit>> build() async {
     final visits = await ref.watch(visitsNotifierProvider.future);
+
     final filter = ref.watch(visitFilterProvider);
     final searchQuery = ref.watch(searchQueryProvider);
 

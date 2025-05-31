@@ -6,7 +6,7 @@ part of 'visits_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$visitsNotifierHash() => r'566cc2640582c226cab1882f63d2acf80a52c452';
+String _$visitsNotifierHash() => r'e6d2c09f514855bdd73142e8ec5942ccd187e5ea';
 
 /// See also [VisitsNotifier].
 @ProviderFor(VisitsNotifier)

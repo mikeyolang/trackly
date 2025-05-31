@@ -1,6 +1,6 @@
 class Visit {
   final int? id;
-  final int customerId;
+  final int? customerId;
   final DateTime visitDate;
   final String status;
   final String location;
@@ -10,7 +10,7 @@ class Visit {
 
   Visit({
     this.id,
-    required this.customerId,
+    this.customerId,
     required this.visitDate,
     required this.status,
     required this.location,
@@ -61,14 +61,14 @@ extension VisitExtension on Visit {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // 'id': id,
       'customer_id': customerId,
       'visit_date': visitDate.toIso8601String(),
       'status': status,
       'location': location,
       'notes': notes,
       'activities_done': activitiesDone,
-      'created_at': createdAt?.toIso8601String(),
+      // 'created_at': createdAt?.toIso8601String(),
     };
   }
 }
