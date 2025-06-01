@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackly/core/constants/print_styles.dart';
+import 'package:trackly/core/router/app_router.dart';
 import 'package:trackly/domain/entities/activity.dart';
 import 'package:trackly/domain/entities/customer.dart';
 import 'package:trackly/domain/entities/visit.dart';
@@ -50,6 +51,12 @@ class _AddVisitPageState extends ConsumerState<AddVisitPage>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () {
+            Navigator.pushNamed(context, AppRouter.homeRoute);
+          },
+        ),
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: theme.primaryColor,

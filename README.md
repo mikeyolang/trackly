@@ -18,6 +18,7 @@ A **Route-to-Market (RTM) Sales Force Automation** app that enables sales reps t
 ### Statistics Screenshots
 
 <div align="center">
+  <img src="./screenshots/barthisMonth.jpeg" alt="All Visits" width="150" style="margin: 2px;"/>
   <img src="./screenshots/quarterBar.jpeg" alt="All Visits" width="150" style="margin: 2px;"/>
   <img src="./screenshots/yearBar.jpeg" alt="Searching" width="150" style="margin: 2px;"/>
   <img src="./screenshots/yearPie.jpeg" alt="Details" width="150" style="margin: 2px;"/>
