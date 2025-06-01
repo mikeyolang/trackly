@@ -6,22 +6,30 @@ A **Route-to-Market (RTM) Sales Force Automation** app that enables sales reps t
 
 ## 📱 Screenshots
 
+### Visits Screenshots
+
 <div align="center">
-  <img src="./screenshots/allvisits.png" alt="All Visits" width="150" style="margin: 2px;"/>
-  <img src="./screenshots/search.png" alt="Searching" width="150" style="margin: 2px;"/>
-  <img src="./screenshots/visitdet.png" alt="Details" width="150" style="margin: 2px;"/>
-  <img src="./screenshots/addvisit.png" alt="Add Visit" width="150" style="margin: 2px;"/>
+  <img src="./screenshots/visitsList.jpeg" alt="All Visits" width="150" style="margin: 2px;"/>
+  <img src="./screenshots/searchVisit.jpeg" alt="Searching" width="150" style="margin: 2px;"/>
+  <img src="./screenshots/visitDetails.jpeg" alt="Details" width="150" style="margin: 2px;"/>
+  <img src="./screenshots/addVisit.jpeg" alt="Add Visit" width="150" style="margin: 2px;"/>
 </div>
 
+### Statistics Screenshots
 
-
+<div align="center">
+  <img src="./screenshots/quarterBar.jpeg" alt="All Visits" width="150" style="margin: 2px;"/>
+  <img src="./screenshots/yearBar.jpeg" alt="Searching" width="150" style="margin: 2px;"/>
+  <img src="./screenshots/yearPie.jpeg" alt="Details" width="150" style="margin: 2px;"/>
+  
+</div>
 ---
 
 ## 🎯 Features
 
 - 📍 **Visit Tracking** — Log customer visits with location and timestamp
 - 📊 **Activity Management** — Create and track daily sales tasks
-- 📈 **Statistics Dashboard** — View visual visit analytics
+- 📈 **Statistics Dashboard** — View visual visit analytics with both pie and bar chart
 - 🔄 **Sync Capabilities** — Offline-first with background data synchronization
 - 📱 **Responsive Design** — Mobile-first, with smooth UX on all screens
 

@@ -13,6 +13,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -21,24 +29,41 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install dependencies
+      - name: Get Flutter dependencies
         run: flutter pub get
+
+      - name: Check for formatting issues
+        run: dart format --set-exit-if-changed .
 
       - name: Analyze project source
         run: flutter analyze
 
-      - name: Run tests
-        run: flutter test
+      - name: Run Flutter tests
+        run: flutter test --coverage
 
-      - name: Build APK
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Build Android APK
         run: flutter build apk --release
 
-      - name: Upload APK
+      - name: Sign Android release
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: build/app/outputs/flutter-apk
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload Release APK
         uses: actions/upload-artifact@v3
         with:
-          name: app-release
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 5
+          retention-days: 7
           if-no-files-found: error
 
   deploy:
@@ -50,10 +75,17 @@ jobs:
       - name: Download APK
         uses: actions/download-artifact@v3
         with:
-          name: app-release
+          name: release-apk
           path: apk
 
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: apk
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_CREDENTIALS }}
+          groups: testers
+          file: apk/app-release.apk
+          releaseNotes: |
+            Changes in this build:
+            - Latest commits from main branch
 

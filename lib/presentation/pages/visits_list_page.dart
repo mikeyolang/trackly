@@ -94,15 +94,22 @@ class _VisitsListPageState extends ConsumerState<VisitsListPage>
     return SliverAppBar(
       floating: true,
       pinned: true,
+      automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: theme.primaryColor,
       foregroundColor: Colors.white,
       flexibleSpace: FlexibleSpaceBar(
         title: FadeTransition(
           opacity: _fadeAnimation,
-          child: const Text(
-            'My Visits',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          child: Container(
+            margin: const EdgeInsets.only(left: 20, bottom: 3),
+            child: const Text(
+              'My Visits',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
         background: Container(
